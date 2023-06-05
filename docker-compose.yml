@@ -1,0 +1,33 @@
+version: "3.9"
+
+services:
+  db:
+    image: mysql:8.0.32
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: P@ssword1234
+      MYSQL_DATABASE: test_db
+      MYSQL_USER: root
+      MYSQL_PASSWORD: P@ssword1234
+    volumes:
+      - ./init-db:/docker-entrypoint-initdb.d
+      - ./db_data:/var/lib/mysql
+    ports:
+      - '3307:3307'
+    networks:
+      - mynetwork
+  api:
+    build: .
+    environment:
+      DB_HOST: db
+      DB_USER: root
+      DB_PASSWORD: P@ssword1234
+      DB_DATABASE: test_db
+    ports:
+      - '5001:5001'
+    depends_on:
+      - db
+
+networks:
+  mynetwork:
+    driver: bridge
